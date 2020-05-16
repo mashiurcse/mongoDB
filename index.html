@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <h1>my node-mongodb site</h1>
+    <p id="fruits"></p>
+    <ul id="products-list"></ul>
+    <div class="container">
+      <div class="row">
+        <input type="text" id="name" placeholder="Name" class="form-control" />
+        <input
+          type="text"
+          id="price"
+          placeholder="price"
+          class="form-control"
+        />
+        <input
+          type="text"
+          id="stock"
+          placeholder="stock"
+          class="form-control"
+        />
+        <button id="addproduct" class="btn-primary">Add Product</button>
+      </div>
+    </div>
+    <script>
+      //get data from server API
+      fetch("http://localhost:3000/product")
+        .then((res) => res.json())
+        .then((data) => {
+          productList(data);
+        });
+
+      function productList(data) {
+        const productContainer = document.getElementById("products-list");
+        for (let index = 0; index < data.length; index++) {
+          const element = data[index];
+          const item = document.createElement("li");
+          item.innerHTML = `${element.name}`;
+          productContainer.appendChild(item);
+        }
+      }
+
+      //post Data to the server
+      const btnAddProduct = document.getElementById("addproduct");
+      btnAddProduct.addEventListener("click", () => {
+        const name = document.getElementById("name").value;
+        const price = document.getElementById("price").value;
+        const stock = document.getElementById("stock").value;
+        const product = { name, price, stock };
+
+        console.log(product);
+
+        fetch("http://localhost:3000/addProduct", {
+          method: "POST",
+          body: JSON.stringify(product),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            document.getElementById("fruits").innerHTML = data.name;
+          });
+      });
+    </script>
+  </body>
+</html>
