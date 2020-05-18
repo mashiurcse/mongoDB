@@ -60,6 +60,23 @@ app.get("/product/:id", (req, res) => {
   });
 });
 
+app.post("/getProductsById", (req, res) => {
+  const productsId = req.body;
+  client = new MongoClient(uri, { useNewUrlParser: true });
+  client.connect((err) => {
+    const collection = client.db("redOnion").collection("products");
+    collection.find({ id: { $in: productsId } }).toArray((err, documents) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send({ message: err });
+      } else {
+        res.send(documents); //return
+      }
+    });
+    client.close();
+  });
+});
+
 app.get("/product", (req, res) => {
   client = new MongoClient(uri, { useNewUrlParser: true });
   client.connect((err) => {
@@ -86,6 +103,25 @@ app.post("/addProduct", (req, res) => {
         console.log(err);
       } else {
         res.send(result); //return
+      }
+    });
+    client.close();
+  });
+});
+
+app.post("/placeOrder", (req, res) => {
+  const orderDetails = req.body;
+  orderDetails.orderTime = new Date();
+  console.log(orderDetails);
+  client = new MongoClient(uri, { useNewUrlParser: true });
+  client.connect((err) => {
+    const collection = client.db("redOnion").collection("orders");
+    collection.insertOne(orderDetails, (err, result) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send({ message: err });
+      } else {
+        res.send(result.ops[0]); //return
       }
     });
     client.close();
