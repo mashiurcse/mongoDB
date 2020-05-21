@@ -33,9 +33,6 @@ let fruit = [
   },
 ];
 
-const dbUser = process.env.DB_USER;
-const pass = process.env.DB_PASS;
-
 const uri = process.env.DB_PATH;
 let client = new MongoClient(uri, { useNewUrlParser: true });
 
