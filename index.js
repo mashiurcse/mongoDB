@@ -125,4 +125,4 @@ app.post("/placeOrder", (req, res) => {
   });
 });
 
-app.listen(4200, () => console.log("Listening 4200"));
+app.listen(3000, () => console.log("Listening 3000"));
