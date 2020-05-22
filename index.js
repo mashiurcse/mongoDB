@@ -90,6 +90,22 @@ app.get("/product", (req, res) => {
   });
 });
 
+
+app.get("/orders", (req, res) => {
+  client = new MongoClient(uri, { useNewUrlParser: true });
+  client.connect((err) => {
+    const collection = client.db("redOnion").collection("orders");
+    collection.find().toArray((err, documents) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send({ message: err });
+      } else {
+        res.send(documents); //return
+      }
+    });
+    client.close();
+  });
+});
 //post - post to server
 app.post("/addProduct", (req, res) => {
   const product = req.body;
