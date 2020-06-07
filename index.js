@@ -9,30 +9,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-//sample data
-let fruit = [
-  {
-    product: "ada",
-    price: 20,
-  },
-  {
-    product: "alu",
-    price: 51,
-  },
-  {
-    product: "potol",
-    price: 51,
-  },
-  {
-    product: "lau",
-    price: 51,
-  },
-  {
-    product: "tomato",
-    price: 51,
-  },
-];
-
 const uri = process.env.DB_PATH;
 let client = new MongoClient(uri, { useNewUrlParser: true });
 
@@ -44,7 +20,7 @@ app.get("/product/:id", (req, res) => {
   const id = req.params.id;
   client = new MongoClient(uri, { useNewUrlParser: true });
   client.connect((err) => {
-    const collection = client.db("redOnion").collection("products");
+    const collection = client.db("doctorsPortal").collection("schedules");
     collection.find({ id }).toArray((err, documents) => {
       if (err) {
         console.log(err);
@@ -57,27 +33,10 @@ app.get("/product/:id", (req, res) => {
   });
 });
 
-app.post("/getProductsById", (req, res) => {
-  const productsId = req.body;
+app.get("/appointments", (req, res) => {
   client = new MongoClient(uri, { useNewUrlParser: true });
   client.connect((err) => {
-    const collection = client.db("redOnion").collection("products");
-    collection.find({ id: { $in: productsId } }).toArray((err, documents) => {
-      if (err) {
-        console.log(err);
-        res.status(500).send({ message: err });
-      } else {
-        res.send(documents); //return
-      }
-    });
-    client.close();
-  });
-});
-
-app.get("/product", (req, res) => {
-  client = new MongoClient(uri, { useNewUrlParser: true });
-  client.connect((err) => {
-    const collection = client.db("redOnion").collection("products");
+    const collection = client.db("doctorsPortal").collection("Appointments");
     collection.find().toArray((err, documents) => {
       if (err) {
         console.log(err);
@@ -90,51 +49,35 @@ app.get("/product", (req, res) => {
   });
 });
 
-
-app.get("/orders", (req, res) => {
-  client = new MongoClient(uri, { useNewUrlParser: true });
-  client.connect((err) => {
-    const collection = client.db("redOnion").collection("orders");
-    collection.find().toArray((err, documents) => {
-      if (err) {
-        console.log(err);
-        res.status(500).send({ message: err });
-      } else {
-        res.send(documents); //return
-      }
-    });
-    client.close();
-  });
-});
-//post - post to server
-app.post("/addProduct", (req, res) => {
-  const product = req.body;
-  client.connect((err) => {
-    const collection = client.db("redOnion").collection("products");
-    collection.insert(product, (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.send(result); //return
-      }
-    });
-    client.close();
-  });
-});
-
-app.post("/placeOrder", (req, res) => {
+app.post("/addAppointments", (req, res) => {
   const orderDetails = req.body;
   orderDetails.orderTime = new Date();
   console.log(orderDetails);
   client = new MongoClient(uri, { useNewUrlParser: true });
   client.connect((err) => {
-    const collection = client.db("redOnion").collection("orders");
+    const collection = client.db("doctorsPortal").collection("Appointments");
     collection.insertOne(orderDetails, (err, result) => {
       if (err) {
         console.log(err);
         res.status(500).send({ message: err });
       } else {
         res.send(result.ops[0]); //return
+      }
+    });
+    client.close();
+  });
+});
+
+app.get("/schedules", (req, res) => {
+  client = new MongoClient(uri, { useNewUrlParser: true });
+  client.connect((err) => {
+    const collection = client.db("doctorsPortal").collection("schedules");
+    collection.find().toArray((err, documents) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send({ message: err });
+      } else {
+        res.send(documents); //return
       }
     });
     client.close();
